@@ -92,11 +92,24 @@ if  browsertime
             td
               a(href=baseHelpURL + 'timeToDomContentFlushed') DOM Content Flushed
             td.number #{h.time.ms(timings.timeToDomContentFlushed.toFixed(0))}
+        if timings.timeToContentfulPaint
+         tr
+            td
+              a(href=baseHelpURL + 'timeToContentfulPaint') Time To Contentful Paint
+            td.number #{h.time.ms(timings.timeToContentfulPaint.toFixed(0))}
+        if timings.timeToFirstInteractive
+         tr
+            td
+              a(href=baseHelpURL + 'timeToFirstInteractive') Time To First Interactive
+            td.number #{h.time.ms(timings.timeToFirstInteractive.toFixed(0))}         
         tr
           td
             a(href=baseHelpURL + 'rumSpeedIndex') RUM Speed Index
           td.number #{h.time.ms(timings.rumSpeedIndex.toFixed(0))}
-         
+        tr
+          td
+            a(href=baseHelpURL + 'loadEventEnd') Load Event End
+          td.number #{h.time.ms(timings.loadEventEnd.toFixed(0))}
         if (timings.fullyLoaded) 
           tr
             td
@@ -158,6 +171,18 @@ if  browsertime
           td #{value}
   else
     p There are no custom configured scripts.
+
+  if browsertime.cdp && browsertime.cdp.performance
+    a#cdp-performance
+    h3 CDP Performance
+    table
+      tr
+        th name
+        th value
+      each value, name in browsertime.cdp.performance
+        tr
+          td #{name}
+          td #{value}
 
   if options.browsertime.visualElements
    a#visual-elements

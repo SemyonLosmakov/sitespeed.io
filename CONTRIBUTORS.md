@@ -1,4 +1,8 @@
 Many many many thanks to:
+* [Jason DeWitt](https://github.com/jasondewitt)
+* [PedroMSantosD](https://github.com/PedroMSantosD)
+* [Gideon Pyzer](https://github.com/gidztech)
+* [Semyon](https://github.com/SemyonLosmakov) 
 * [Markus Liljedahl](https://github.com/mliljedahl)
 * [Ferdinand Holzer](https://github.com/fholzer)
 * [George Haddad](https://github.com/george-haddad)
