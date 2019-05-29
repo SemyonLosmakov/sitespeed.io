@@ -1,5 +1,127 @@
 # CHANGELOG - sitespeed.io
 
+## UNRELEASED
+
+### Added
+* Upgraded to Firefox 67.0 in the Docker container.
+* Upgraded to 0.8.2 of third-party-web
+* Upgraded Browsertime that automatically pickup up visual mettrics for elements with the elementtiming attribute. When it land in Chrome, this will make sure you will get it both in RUM and synthetic [#841](https://github.com/sitespeedio/browsertime/pull/841).
+* Send CPU metrics as summmary per domain to Graphite/InfluxDB [#2480](https://github.com/sitespeedio/sitespeed.io/pull/2480)
+* You can now see number of CPU long tasks on the summary page [#2479](https://github.com/sitespeedio/sitespeed.io/pull/2479)
+* Upgraded to latest Perf Cascade thagt shows HAR content in new tab [#2478](https://github.com/sitespeedio/sitespeed.io/pull/2478)
+* Show Visual Metrics defined by the user on metrics page [#2476](https://github.com/sitespeedio/sitespeed.io/pull/2476)
+* WebPageTest: Send hero timings to Graphite/InfluxDB by default [#2474](https://github.com/sitespeedio/sitespeed.io/pull/2474)
+
+### Fixed
+* Upgraded the Coach with a bug fix that make sure a JavaScript loaded as defer isn't categorised as render blocking.
+* Third party web sites (sites that themselves are third parties) counted all there own requests as third parties [#2475](https://github.com/sitespeedio/sitespeed.io/pull/2475).
+* Getting the HTML content into your Chrome HAR included the full content object instead of just the plain text. Fixed in [#842](https://github.com/sitespeedio/browsertime/pull/842).
+Using CPU metrics on Android phones was broken since 9.0.0, fixed in [#844](https://github.com/sitespeedio/browsertime/pull/844).
+
+## 9.0.0 - 2019-05-21
+
+### Added
+* Upgraded to [Browsertime 5.0.0](https://github.com/sitespeedio/browsertime/blob/master/CHANGELOG.md#500---2019-05-16).
+
+* Collect CPU long tasks in Chrome using `--chrome.collectLongTasks` using the [Long Task API](https://developer.mozilla.org/en-US/docs/Web/API/Long_Tasks_API). For the long tasks to work, we inject JS using the *Page.addScriptToEvaluateOnNewDocument* devtools command. We collect all long tasks and related data (not so much at the moment but will get better/more useful information when browsers supports it) and count the total number of long tasks, long tasks that happens before first paint and first contentful paint. Implemented in [#821](https://github.com/sitespeedio/browsertime/pull/821) and [#825](https://github.com/sitespeedio/browsertime/pull/825).
+
+* By default a long task is >50ms. Wanna change that? Use `--minLongTaskLength` to set that yourselves (it needs to be larger than 50 ms though) [#838](https://github.com/sitespeedio/browsertime/pull/838).
+
+* Throttle the CPU using Chrome with `--chrome.CPUThrottlingRate`. Enables CPU throttling to emulate slow CPUs. Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc). Implemented in [#819](https://github.com/sitespeedio/browsertime/pull/819).
+
+* You can now use a .browsertime.json file as a default config json file that will be picked up automatically [#824](https://github.com/sitespeedio/browsertime/pull/824).
+
+* Include the actual HTML in the HAR file for Chrome using `--chrome.includeResponseBodies html` [#826](https://github.com/sitespeedio/browsertime/pull/826)
+
+* Use `--chrome.blockDomainsExcept` to block all domains except. Use it muliple times to have multiple domains. You can also use wildcard like *.sitespeed.io [#840](https://github.com/sitespeedio/browsertime/pull/840)
+
+* You can use a `.siteespeed.io.json` file that holds default config setup when you run sitespeed.io [#2454](https://github.com/sitespeedio/sitespeed.io/pull/2454).
+
+* We have moved all CPU metrics to a new tab called ... wait a minute .. CPU! [#2457](https://github.com/sitespeedio/sitespeed.io/pull/2457).
+
+* If you use Chrome you can use `--cpu` to enable  to enable `--chrome.timeline` and `--chrome.collectLongTasks` in one go [#2457](https://github.com/sitespeedio/sitespeed.io/pull/2457).
+
+* The film strip includes CPU long tasks [#2459](https://github.com/sitespeedio/sitespeed.io/pull/2459)
+
+### Changed
+* Replaced [Chrome-trace](https://github.com/sitespeedio/chrome-trace) with [Tracium](https://github.com/aslushnikov/tracium) in [#816](https://github.com/sitespeedio/browsertime/pull/816/). This means we use a Chrome blessed parser that will mean less work for us within the team! Enable it with `--chrome.timeline`. It also means two changes:
+* We skipped reporting all internal events inside of Chrome and only report events that takes more than 10 ms. We do this because it makes it easier to understand which events actually takes time and are useful.
+* Instead of reporting: Loading, Painting, Rendering, Scripting and Other we now report the same categories as Tracium: parseHTML, styleLayout, paintCompositeRender, scriptParseCompile,  scriptEvaluation, garbageCollection and other. This gives you a little more insights of CPU time spent.
+* We collect more trace log than before (following Lighthouse, the trace log will be larger on disk), this makes it easier for you when you want to debug problems.
+
+* Lighthouse: If you use the G+ container, Lighthouse has changed: The container uses Lighthouse 5.0, output HTML by default that is iframed into sitespeed.io. That means instead of seeing just the cherry picked metrics, you will now see the full Lighthouse result. See [#26](https://github.com/sitespeedio/plugin-lighthouse/pull/26).
+
+* On the summary page, we show Third party summary from the median run instead of actual median metrics. That makes it one less click to see which 3rd party tools a web page is using [#2455](https://github.com/sitespeedio/sitespeed.io/pull/2455).
+
+* Remember when you upgrade there are two things that can change: Metrics could be a little slower in Chrome since we now collect more trace log (only when you turn on CPU tracing) and there are new categoris for the CPU trace! If you use Lighthouse and had your own hack for including the HTML, that isn't needed any more.
+
+### Fixed
+* Bumped all dependencies that needed a bump [#2453](https://github.com/sitespeedio/sitespeed.io/pull/2453).
+
+## 8.15.2 - 2019-05-05
+### Fixed
+* Upgraded Firefox to 66.0.4 to fix the issue that broke Firefox extension (making it impossible to get the HAR file etc).
+
+## 8.15.1 - 2019-04-26
+### Fixed
+* Various bug fixes for GSC plugin, thank you [Markus Liljedahl](https://github.com/mliljedahl) for the PR [#2438](https://github.com/sitespeedio/sitespeed.io/pull/2438).
+
+## 8.15.0 - 2019-04-23
+### Added
+* Use Chrome 74 stable in the Docker container and Chomedriver 74 (you need upgrade to Chrome 74).
+* Upgraded Coach to match latest Browsertime version with Chrome and upgraded Browsertime to fix miss matched locked file in npm for Chromedriver.
+
+### Fixed
+* We displayed error on the summary page even though we didn't have an error.
+
+## 8.14.0 - 2019-04-23
+
+### Added
+* Collect errors from Browsertime and send them to Graphite/InfluxDB. This makes it possible to alert on failing runs in Grafana [#2429](https://github.com/sitespeedio/sitespeed.io/pull/2429). The metrics are sent under the key *browsertime.statistics.errors*.
+
+* The GPSI in the g+ container was upgraded to gpagespeed 6.0.6.
+
+* Upgraded to third-party-web 0.6.1 that includes more domains.
+
+* Upgrading to [Browsertime 4.7.0](https://github.com/sitespeedio/browsertime/blob/master/CHANGELOG.md#470---2019-04-21) adds three new things to scripting:
+  * You can add your own error `commands.error(message)`. The error will be attached to the latest tested page. Say that you have a script where you first measure a page and then want to click on a specific link and the link doesn't exist. Then you can attach your own error with your own error text. The error will be sent to your datasource and will be visible in the HTML result.
+
+  * You can add meta data to your script with `commands.meta.setTitle(title)` and `commands.meta.setDescription(desc)`
+
+* Upgrading to [Browsertime 4.8.0](https://github.com/sitespeedio/browsertime/blob/master/CHANGELOG.md#480---2019-04-23) fixes so errors thrown from your script, holds a usable error message instead of the wrapped Chromedriver error.
+
+### Fixed
+* If a page failed, pug through an error [#2428](https://github.com/sitespeedio/sitespeed.io/pull/2428)
+
+* The close (and open methods) of plugins missed waiting on all plugins before moving on as reported in [2431](https://github.com/sitespeedio/sitespeed.io/issues/2431) and [#2433](https://github.com/sitespeedio/sitespeed.io/issues/2433) and fixed in [#2434](https://github.com/sitespeedio/sitespeed.io/pull/2434).
+
+
+## 8.13.0 - 2019-04-17
+
+### Added
+* Show the total number of third party requests and also add them as a column on the pages page [#2422](https://github.com/sitespeedio/sitespeed.io/pull/2422).
+
+### Fixed
+* Better error handling if one URL fails in a script by upgrading to Browsertime 4.6.4 and PageXray 2.5.6.
+
+## 8.12.0 - 2019-04-11
+
+### Added
+* We updated Chrome to version 74 beta in the Docker container. The reason is that some users had problem running Chrome 73 in the container. You can read all about it in [#2416](https://github.com/sitespeedio/sitespeed.io/issues/2416). Most metrics looks the same. One thing we've seen is that there is a new event "RunTask" that is categorised as "Other" if you use `--chrome.timeline`. We will fix that later on, just a heads up! Updated in [#2419](https://github.com/sitespeedio/sitespeed.io/pull/2419).
+
+### Fixed
+
+## 8.11.2 - 2019-04-10
+
+### Fixed
+* Added missing User Timing measure duration in the HTML output. We have always collected that but we didn't show it in the HTML [#2417](https://github.com/sitespeedio/sitespeed.io/pull/2417).
+
+## 8.11.1 - 2019-04-09
+
+### Fixed
+* Upgraded to Grafana 6.1.3 in the Docker compose file.
+* Ugraded to Browsertime 4.6.2 that fixes Report duration metrics in CDP performance in ms. 
+
 ## 8.11.0 - 2019-04-08
 
 ### Added
@@ -1926,8 +2048,7 @@ And many many more changed. Read about the release https://www.sitespeed.io/site
 ## version 3.2.1 - 2015-03-21
 
 - Check that URLs are valid when fetched from a file
-- Bug fixes: Compressed sizes has been wrong a long time since a bug in PhantomJS. However, if you also fetch data using browsers or
-  WebPageTest, the sizez will now be correctly populated! #54 #577
+- Bug fixes: Compressed sizes has been wrong a long time since a bug in PhantomJS. However, if you also fetch data using browsers or  WebPageTest, the sizez will now be correctly populated! #54 #577
 - New Browsertime 0.9.2 with fix for HTTPS, making requests visible in HAR-files.
 
 ## version 3.2.0 - 2015-03-18
